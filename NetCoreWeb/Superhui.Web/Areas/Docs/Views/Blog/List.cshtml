@@ -1,0 +1,45 @@
+﻿@model BlogListViewModel
+@{
+    ViewData["Title"] = "List";
+}
+
+<div class="header">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="logotxt"><h1><a asp-action="list">SuperHui</a></h1></div>
+                @*<h2 class="site-name text-center">Blog<span>www.zoupenghui.com</span></h2>*@
+            </div>
+        </div>
+    </div>
+</div>
+<main class="main container" role="main">
+    <div class="container">
+        <div class="row" id="post-list">
+            @foreach (var a in Model.Blogs)
+            {
+                <div class="col-xs-12 col-sm-6">
+                    <article class="post tag-chinese-website tag-bootstrap-v3">
+                        <h3 class="post-title">
+                            <a asp-action="Index" asp-route-blogId="@a.BlogID">@a.Name</a>
+                        </h3>
+                        @*<div class="post-featured-image">
+                            <a class="thumbnail" asp-action="Album" asp-route-blogId="@a.BlogID">
+                               @a.Name
+                            </a>
+                        </div>*@
+                    </article>
+                </div>
+            }            
+
+        </div>
+        <nav page-model="@Model.PagingInfo"
+             page-action="List"
+             page-url-category="@Model.CurrentCategory"
+             page-pre-class="newer-posts"
+             page-next-class="older-posts"
+             class="pagination">
+        </nav>
+    </div>
+</main>
+

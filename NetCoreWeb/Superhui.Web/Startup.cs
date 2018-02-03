@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Superhui.Web.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Superhui.Web
 {
@@ -22,6 +26,11 @@ namespace Superhui.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddDbContext<Models.AppIdentityDbContext>(options => options.UseSqlServer(Configuration["Data:Identity:ConnectionString"]));
+            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AppIdentityDbContext>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddDbContext<Areas.Docs.Models.BlogDbContext>(options => options.UseSqlServer(Configuration["Data:Blog:ConnectionString"]));
+            services.AddTransient<Areas.Docs.Models.IBlogRepository, Areas.Docs.Models.EFBlogRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,6 +55,7 @@ namespace Superhui.Web
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+            //IdentitySeedData.EnsurePopulated(app);//身份验证
         }
     }
 }
