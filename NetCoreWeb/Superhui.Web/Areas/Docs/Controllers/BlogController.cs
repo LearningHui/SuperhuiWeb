@@ -38,7 +38,7 @@ namespace Superhui.Web.Areas.Docs.Controllers
 
             return View((object)blogContent);
         }
-        public int PageSize = 4;
+        public int PageSize = 10;
         public IActionResult List(string category, int page = 1)
         {
             return View(new BlogListViewModel
@@ -84,6 +84,7 @@ namespace Superhui.Web.Areas.Docs.Controllers
         //    return mdContent;
         //}
         [HttpGet]
+        [Authorize]
         public IActionResult Create()
         {
             Blog blog = new Blog();
@@ -120,6 +121,7 @@ namespace Superhui.Web.Areas.Docs.Controllers
         //}
         // POST: Blog/Create
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public ActionResult Create(IFormCollection collection,Blog blog)
         {
@@ -130,7 +132,7 @@ namespace Superhui.Web.Areas.Docs.Controllers
                 blog.IsPrivate = false;
                 repository.SaveBlog(blog);
                 //return Request.Form["test-editormd-markdown-doc"];
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(List));
             }
             catch
             {
@@ -139,34 +141,37 @@ namespace Superhui.Web.Areas.Docs.Controllers
         }
 
         // GET: Blog/Edit/5
-        public string Edit(int id)
+        [Authorize]
+        public IActionResult Edit(int blogID)
         {
-            var blog = repository.Blogs.FirstOrDefault(a => a.BlogID == id);
+            //var blog = repository.Blogs.FirstOrDefault(a => a.BlogID == id);
 
-            //设置blog内容
-            string filePath = hostingEnv.WebRootPath + $@"\docs\samples\test.md";
-            FileStream stream = new FileStream(filePath, FileMode.Open);
-            StreamReader sReader = new StreamReader(stream, Encoding.UTF8);
-            string mdContent = sReader.ReadToEnd();
-            blog.Content = mdContent;
-            sReader.Close();
-            stream.Close();
+            ////设置blog内容
+            //string filePath = hostingEnv.WebRootPath + $@"\docs\samples\test.md";
+            //FileStream stream = new FileStream(filePath, FileMode.Open);
+            //StreamReader sReader = new StreamReader(stream, Encoding.UTF8);
+            //string mdContent = sReader.ReadToEnd();
+            //blog.Content = mdContent;
+            //sReader.Close();
+            //stream.Close();
 
-            repository.SaveBlog(blog);
+            //repository.SaveBlog(blog);
 
-            return "update sucess!";
+            Blog blog = repository.Blogs.FirstOrDefault(b => b.BlogID == blogID);        
+            return View(blog);
         }
 
         // POST: Blog/Edit/5
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(Blog blog, IFormCollection collection)
         {
             try
             {
                 // TODO: Add update logic here
-
-                return RedirectToAction(nameof(Index));
+                repository.SaveBlog(blog);
+                return RedirectToAction(nameof(List));
             }
             catch
             {
@@ -175,7 +180,7 @@ namespace Superhui.Web.Areas.Docs.Controllers
         }
 
         // GET: Blog/Delete/5
-        
+        [Authorize]
         public ActionResult Delete(int id)
         {
             return View();
@@ -183,6 +188,7 @@ namespace Superhui.Web.Areas.Docs.Controllers
 
         // POST: Blog/Delete/5
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, IFormCollection collection)
         {

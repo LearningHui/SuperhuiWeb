@@ -25,12 +25,19 @@ namespace Superhui.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            
+
             services.AddDbContext<Models.AppIdentityDbContext>(options => options.UseSqlServer(Configuration["Data:Identity:ConnectionString"]));
-            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AppIdentityDbContext>();
+            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AppIdentityDbContext>().AddDefaultTokenProviders();
+
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddDbContext<Areas.Docs.Models.BlogDbContext>(options => options.UseSqlServer(Configuration["Data:Blog:ConnectionString"]));
             services.AddTransient<Areas.Docs.Models.IBlogRepository, Areas.Docs.Models.EFBlogRepository>();
+
+            services.AddMvc();
+
+            services.AddMemoryCache();
+            services.AddSession();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,7 +54,8 @@ namespace Superhui.Web
             }
 
             app.UseStaticFiles();
-
+            app.UseSession();
+            app.UseAuthentication();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(name: "areas", template: "{area:exists}/{controller=Home}/{action=Index}");
