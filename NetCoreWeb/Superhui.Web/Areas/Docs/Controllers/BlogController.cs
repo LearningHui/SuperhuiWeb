@@ -32,11 +32,18 @@ namespace Superhui.Web.Areas.Docs.Controllers
             Blog blog = repository.Blogs.FirstOrDefault(b => b.BlogID == blogId);
             string blogContent = "";
             if (blog != null)
+            {
+                var allRelatedBlogs = repository.Blogs.Where(b => b.Category == blog.Category);
                 blogContent = blog.Content;
+                ViewBag.SelectedBlog = blog;
+                //return View((object)blogContent);
+                return View(new BlogIndexViewModel() { AllRelatedBlogs = allRelatedBlogs, CurrentBlog = blog });
+            }
             else
+            {
                 blogContent = "未查找到相关内容";
-
-            return View((object)blogContent);
+                return View();
+            }
         }
         public int PageSize = 10;
         public IActionResult List(string category, int page = 1)
