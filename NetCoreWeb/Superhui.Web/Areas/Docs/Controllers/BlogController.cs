@@ -45,7 +45,7 @@ namespace Superhui.Web.Areas.Docs.Controllers
                 return View();
             }
         }
-        public int PageSize = 10;
+        public int PageSize = 8;
         public IActionResult List(string category, int page = 1)
         {
             return View(new BlogListViewModel
